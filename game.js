@@ -433,6 +433,11 @@ function startPlaying() {
   document.getElementById('ep-av-end').innerHTML   = `<span class="av-initials">${initials(end)}</span>`;
   getPhoto(start).then(url => { if (url) setAvPhoto('ep-av-start', url); });
   getPhoto(end).then(url   => { if (url) setAvPhoto('ep-av-end',   url); });
+
+  const goalEndpoint = document.querySelector('.endpoint.goal');
+  goalEndpoint.style.cursor = 'pointer';
+  goalEndpoint.addEventListener('click', () => showGoalReveal(S.endPlayer));
+
   render();
 }
 
@@ -597,6 +602,67 @@ function renderStep() {
     document.getElementById('share-btn')?.addEventListener('click', () => copyResult(hops));
     document.getElementById('try-again-btn')?.addEventListener('click', tryAgain);
   }
+}
+
+function showGoalReveal(playerName) {
+  const squads = (G.playerToSquads.get(playerName) || [])
+    .filter(s => s.country === S.country)
+    .sort((a, b) => a.year - b.year);
+
+  const existing = document.getElementById('goal-reveal');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'goal-reveal';
+  panel.innerHTML = `
+    <div class="gr-backdrop"></div>
+    <div class="gr-sheet">
+      <div class="gr-header">
+        <div class="av av-lg gr-av"><span class="av-initials">${esc(initials(playerName))}</span></div>
+        <div class="gr-player-name">${esc(playerName)}</div>
+        <div class="gr-sub">World Cup appearances</div>
+      </div>
+      <div class="gr-years">
+        ${squads.map(s => `
+          <div class="gr-year-row">
+            <div class="sc-logo-wrap gr-logo-wrap" id="gr-logo-wrap-${s.year}">
+              <span class="sc-year">${s.year}</span>
+            </div>
+            <div class="gr-year-info">
+              <span class="sc-host">${esc(WC_HOST[s.year] || '')}</span>
+              <span class="gr-year-label">${s.year} FIFA World Cup</span>
+            </div>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-secondary gr-confirm">Close</button>
+    </div>`;
+  document.body.appendChild(panel);
+
+  getPhoto(playerName).then(url => {
+    if (!url) return;
+    const avEl = panel.querySelector('.gr-av');
+    if (!avEl) return;
+    const img = new Image();
+    img.alt = '';
+    img.src = url;
+    img.onload = () => { avEl.innerHTML = ''; avEl.appendChild(img); };
+  });
+
+  squads.forEach(async s => {
+    const url = await getWCLogo(s.year);
+    const wrap = panel.querySelector(`#gr-logo-wrap-${s.year}`);
+    if (!wrap || !url) return;
+    const img = new Image();
+    img.alt = `${s.year} FIFA World Cup`;
+    img.className = 'sc-logo';
+    img.src = url;
+    img.onload = () => { wrap.innerHTML = ''; wrap.appendChild(img); };
+  });
+
+  requestAnimationFrame(() => panel.querySelector('.gr-sheet').classList.add('gr-sheet-in'));
+
+  panel.querySelector('.gr-backdrop').addEventListener('click', () => panel.remove());
+  panel.querySelector('.gr-confirm').addEventListener('click', () => panel.remove());
 }
 
 function render() {

@@ -305,6 +305,7 @@ html, body {
 .endpoint.goal .ep-label { color: var(--gold); }
 .endpoint.goal .ep-name  { color: var(--gold); }
 .endpoint.goal .av       { border-color: var(--gold); }
+.endpoint.goal:active    { opacity: 0.7; }
 .ep-sep { color: var(--muted); font-size: 18px; flex-shrink: 0; }
 
 /* ── Path bar ── */
@@ -504,6 +505,67 @@ html, body {
   border: 1.5px solid var(--border);
 }
 .btn-ghost-action:hover { color: var(--text); border-color: var(--muted); }
+
+/* ── Goal reveal sheet ── */
+#goal-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.gr-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.gr-sheet {
+  position: relative;
+  background: var(--surface);
+  border-top: 1.5px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 36px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80dvh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.gr-sheet-in { transform: translateY(0); }
+
+.gr-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.gr-av { border-color: var(--gold) !important; }
+.gr-player-name { font-size: 20px; font-weight: 800; color: var(--gold); }
+.gr-sub { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+
+.gr-years { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+
+.gr-year-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.gr-logo-wrap { width: 52px; height: 52px; flex-shrink: 0; }
+.gr-year-info { display: flex; flex-direction: column; gap: 3px; }
+.gr-year-label { font-size: 12px; color: var(--muted); }
+
+.gr-confirm { width: 100%; padding: 14px; font-size: 16px; border-radius: var(--radius); margin: 0; display: block; }
 
 /* ── Toast ── */
 #toast {
